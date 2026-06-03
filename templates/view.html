@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Viewing Layout: {{ filename }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .header { background: #2c3e50; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
+        .header h2 { margin: 0; font-size: 18px; font-weight: normal; }
+        .header a { text-decoration: none; color: white; background: #e67e22; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: bold;}
+        .header a:hover { background: #d35400; }
+        #diagram-container { flex-grow: 1; background: #fafafa; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h2>Viewing Canvas: <code>{{ filename }}</code></h2>
+        <a href="{{ url_for('index') }}">← Repository Dashboard</a>
+    </div>
+
+    <div id="diagram-container"></div>
+
+    <script>
+        const diagramText = `{{ content | safe }}`;
+        mermaid.initialize({ startOnLoad: false, theme: 'default', maxTextSize: 120000 });
+
+        async function renderDiagram() {
+            const container = document.getElementById('diagram-container');
+            try {
+                const { svg } = await mermaid.render('mermaid-svg-element', diagramText);
+                container.innerHTML = svg;
+
+                const svgElement = container.querySelector('svg');
+                svgElement.style.width = '100%';
+                svgElement.style.height = '100%';
+                svgElement.style.maxWidth = 'none';
+
+                svgPanZoom(svgElement, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: true,
+                    fit: true,
+                    center: true,
+                    minZoom: 0.05,
+                    maxZoom: 15
+                });
+            } catch (error) {
+                container.innerHTML = `<p style="color:red; padding:20px;"><strong>Render Execution Error:</strong><br>${error.message}</p>`;
+            }
+        }
+        renderDiagram();
+    </script>
+</body>
+</html>

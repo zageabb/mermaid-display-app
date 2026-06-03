@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagram Workspace Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 30px; background: #f4f6f9; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h1 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;}
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; }
+        th { background-color: #34495e; color: white; }
+        
+        /* Master row base highlighting */
+        tr.master-row { background-color: #fafbfc; }
+        tr.master-row td { border-top: 2px solid #eaeded; }
+        
+        /* Sub-diagram structural nesting styles */
+        tr.child-row td.file-cell { padding-left: 40px; color: #555; }
+        tr.child-row { background-color: #ffffff; }
+        tr:hover { background-color: #f1f4f6 !important; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge-master { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .badge-sub { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        .badge-orphan { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        
+        .btn { text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px; cursor: pointer; display: inline-block; margin-right: 5px;}
+        .btn-view { background: #3498db; color: white; }
+        .btn-view:hover { background: #2980b9; }
+        .btn-edit { background: #e67e22; color: white; }
+        .btn-edit:hover { background: #d35400; }
+        
+        .flash { background: #d4edda; color: #155724; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #c3e6cb; }
+        code { font-family: Consolas, monospace; background: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mermaid Document Repository</h1>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>File Name Mapping</th>
+                    <th>Classification</th>
+                    <th>Relative File Scope</th>
+                    <th>Available Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                <tr class="{{ 'child-row' if file.is_child else 'master-row' }}">
+                    <td class="file-cell">
+                        {% if file.is_child %}
+                            └── 📁 {{ file.name }}
+                        {% else %}
+                            📦 <strong>{{ file.name }}</strong>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if file.type == 'Master' %}
+                            <span class="badge badge-master">Master Diagram</span>
+                        {% elif file.type == 'Sub-Component' %}
+                            <span class="badge badge-sub">Included Sub-Doc</span>
+                        {% else %}
+                            <span class="badge badge-orphan">Standalone Sub-Doc</span>
+                        {% endif %}
+                    </td>
+                    <td><code>diagrams/{{ file.rel_path }}</code></td>
+                    <td>
+                        <a href="{{ url_for('view', rel_path=file.rel_path) }}" class="btn btn-view">👁️ View</a>
+                        <a href="{{ url_for('edit', rel_path=file.rel_path) }}" class="btn btn-edit">📝 Edit Source</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">No documents discovered. Populate '.mmd' files into the workspace directory.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+ * Serving Flask app 'app'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5012
+ * Running on http://192.168.1.130:5012
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 130-581-758
+192.168.1.203 - - [03/Jun/2026 13:07:59] "GET / HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:07:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+192.168.1.203 - - [03/Jun/2026 13:08:04] "GET /view/master_sap_schema.mmd HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:08:18] "GET / HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:08:20] "GET /edit/master_sap_schema.mmd HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:09:16] "GET / HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:09:21] "GET /view/master_system.mmd HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:09:31] "GET / HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:09:34] "GET /view/sub_diagrams/api_gateway.mmd HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:19:27] "GET / HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:19:36] "GET /view/sub_diagrams/payment_processor.mmd HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:20:10] "GET / HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:20:19] "GET /edit/sub_diagrams/materials_management.mmd HTTP/1.1" 200 -
+192.168.1.203 - - [03/Jun/2026 13:20:27] "GET / HTTP/1.1" 200 -
