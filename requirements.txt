@@ -5,3 +5,5 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
 Werkzeug==3.1.8
+python-pptx>=1.0,<2
+diagram-pptx>=0.1.0b3,<0.2
