@@ -1,4 +1,5 @@
 from flask import Flask, render_template, abort, request, redirect, url_for, flash, send_file
+from werkzeug.middleware.proxy_fix import ProxyFix
 from diagram_pptx import render_mermaid
 from pptx import Presentation
 from pptx.util import Inches
@@ -7,6 +8,8 @@ import os
 import re
 
 app = Flask(__name__)
+# Trust only the isolated single UDA/Caddy forwarding hop.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 app.secret_key = 'super_secret_dev_key'
 
 DIAGRAM_DIR = "diagrams"
