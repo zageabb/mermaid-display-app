@@ -9,19 +9,24 @@
         .header { background: #2c3e50; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
         .header h2 { margin: 0; font-size: 18px; font-weight: normal; }
         .header-actions { display: flex; gap: 8px; align-items: center; }
-        .header a { text-decoration: none; color: white; background: #e67e22; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: bold; }
-        .header a:hover { background: #d35400; }
-        .header a.export { background: #1f8f5f; }
-        .header a.export:hover { background: #18734c; }
+        .header a, .header button { text-decoration: none; color: white; background: #e67e22; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: bold; }
+        .header a:hover, .header button:hover:not(:disabled) { background: #d35400; }
+        .header a.export, .header button.export { background: #1f8f5f; }
+        .header a.export:hover, .header button.export:hover:not(:disabled) { background: #18734c; }
+        .header button { border: 0; cursor: pointer; }
+        .header button:disabled { opacity: .5; cursor: wait; }
         #diagram-container { flex-grow: 1; background: #fafafa; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+    <script src="{{ url_for('static', filename='diagram_export.js') }}"></script>
 </head>
 <body>
     <div class="header">
         <h2>Viewing Canvas: <code>{{ filename }}</code></h2>
         <div class="header-actions">
+            <button class="export" type="button" id="download-svg" disabled>↓ SVG</button>
+            <button class="export" type="button" id="download-png" disabled>↓ PNG</button>
             <a class="export" href="{{ url_for('export_pptx', rel_path=filename) }}">↓ Export editable PPTX</a>
             <a href="{{ url_for('index') }}">← Repository Dashboard</a>
         </div>
@@ -30,7 +35,8 @@
     <div id="diagram-container"></div>
 
     <script>
-        const diagramText = `{{ content | safe }}`;
+        const diagramText = {{ content | tojson }};
+        let exportSvg = null;
         mermaid.initialize({ startOnLoad: false, theme: 'default', maxTextSize: 120000 });
 
         async function renderDiagram() {
@@ -38,6 +44,9 @@
             try {
                 const { svg } = await mermaid.render('mermaid-svg-element', diagramText);
                 container.innerHTML = svg;
+                exportSvg = svg;
+                document.getElementById("download-svg").disabled = false;
+                document.getElementById("download-png").disabled = false;
 
                 const svgElement = container.querySelector('svg');
                 svgElement.style.width = '100%';
@@ -53,8 +62,24 @@
                     maxZoom: 15
                 });
             } catch (error) {
+                exportSvg = null;
+                document.getElementById("download-svg").disabled = true;
+                document.getElementById("download-png").disabled = true;
                 container.innerHTML = `<p style="color:red; padding:20px;"><strong>Render Execution Error:</strong><br>${error.message}</p>`;
             }
+        }
+        for (const format of ['svg', 'png']) {
+            const button = document.getElementById('download-' + format);
+            button.addEventListener('click', async () => {
+                button.disabled = true;
+                try {
+                    await DiagramExport.download(exportSvg, format, {{ filename | tojson }});
+                } catch (error) {
+                    window.alert('Diagram export failed: ' + error.message);
+                } finally {
+                    button.disabled = !exportSvg;
+                }
+            });
         }
         renderDiagram();
     </script>
