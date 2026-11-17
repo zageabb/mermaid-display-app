@@ -1,0 +1,32 @@
+schema_version: 1
+application:
+  name: mermaid-display-app
+  display_name: Mermaid Display App
+  group: TAIJU - Development
+source:
+  branch: main
+runtime:
+  type: python
+  version: "3.10.12"
+  working_dir: .
+build:
+  working_dir: .
+  commands:
+    - ["python", "-m", "pip", "install", "-r", "requirements.txt", "gunicorn"]
+service:
+  type: systemd
+  entrypoint: ["gunicorn", "--workers", "2", "--timeout", "300", "--bind", "0.0.0.0:5070", "app:app"]
+  port: 5070
+  health_path: /
+proxy:
+  enabled: true
+  path: /apps/mermaid-display-app/
+  authentication: uda
+environment:
+  required:
+    - MERMAID_EDITOR_URL
+deployment:
+  auto_update: false
+  rollback: true
+  github_reporting: false
+
